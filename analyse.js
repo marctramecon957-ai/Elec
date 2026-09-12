@@ -1,9 +1,7 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const SYSTEM_PROMPT = `Tu es un expert en electricite industrielle et batiment (armoires electriques, cablage, rails DIN).
 On te donne une photo d'une armoire electrique, d'un cablage ou d'une installation.
@@ -14,7 +12,7 @@ Analyse l'image et identifie :
 3. Les rails DIN : largeur/dimension si identifiable (ex: 35mm)
 4. Les reperes de bornier visibles sur les etiquettes (ex: X1-3, X2-1, etc.) et, si les numeros de fils amont/aval sont visibles ou inscrits (etiquettes de fils, dominos, reperes de cablage), indique-les.
 
-Reponds UNIQUEMENT en JSON valide, sans texte autour, avec cette structure exacte :
+Reponds UNIQUEMENT en JSON valide, sans texte autour, sans balises markdown, avec cette structure exacte :
 {
   "materiaux": ["liste des materiaux/composants identifies"],
   "cables": [{"type": "...", "section_mm2": "...", "couleur": "..."}],
@@ -26,36 +24,26 @@ Reponds UNIQUEMENT en JSON valide, sans texte autour, avec cette structure exact
 Si une information n'est pas visible ou incertaine, indique "non visible" ou laisse un champ vide plutot que d'inventer.`;
 
 async function analyserPhoto(filePath, mimeType) {
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    systemInstruction: SYSTEM_PROMPT,
+  });
+
   const imageBuffer = fs.readFileSync(filePath);
   const base64Image = imageBuffer.toString('base64');
 
-  const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5',
-    max_tokens: 2000,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: mimeType,
-              data: base64Image,
-            },
-          },
-          {
-            type: 'text',
-            text: 'Analyse cette photo d\'installation electrique selon les instructions.',
-          },
-        ],
+  const result = await model.generateContent([
+    {
+      inlineData: {
+        data: base64Image,
+        mimeType: mimeType,
       },
-    ],
-  });
+    },
+    { text: "Analyse cette photo d'installation electrique selon les instructions." },
+  ]);
 
-  const textBlock = response.content.find((c) => c.type === 'text');
-  let raw = textBlock ? textBlock.text : '{}';
+  const response = result.response;
+  let raw = response.text();
 
   // Nettoyage au cas ou le modele ajoute des balises markdown
   raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -69,7 +57,7 @@ async function analyserPhoto(filePath, mimeType) {
       cables: [],
       rails: [],
       reperages: [],
-      notes: 'Erreur lors de l\'analyse automatique. Merci de completer manuellement.',
+      notes: "Erreur lors de l'analyse automatique. Merci de completer manuellement.",
     };
   }
 }

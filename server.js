@@ -32,8 +32,8 @@ app.use('/uploads', express.static(uploadsDir));
 app.post('/api/analyser', upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Aucune photo recue' });
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return res.status(500).json({ error: 'Cle API Anthropic non configuree sur le serveur' });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'Cle API Gemini non configuree sur le serveur' });
     }
 
     const resultat = await analyserPhoto(req.file.path, req.file.mimetype);

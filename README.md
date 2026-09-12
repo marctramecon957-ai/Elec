@@ -5,7 +5,7 @@ Application web pour analyser des photos d'installations electriques (armoires, 
 ## Fonctionnalites
 
 - Prise de photo (mobile) ou import (desktop / drag & drop)
-- Analyse automatique via l'API Claude (vision) : materiaux, cables, dimensions de rails
+- Analyse automatique via l'API Google Gemini (vision) : materiaux, cables, dimensions de rails
 - Detection des reperes de bornier (ex. X1-3) avec numeros de fils amont/aval
 - Tableau de reperage editable (ajout, modification, suppression de lignes)
 - Historique des analyses avec photos
@@ -15,7 +15,7 @@ Application web pour analyser des photos d'installations electriques (armoires, 
 ```bash
 npm install
 cp .env.example .env
-# Ajouter ta cle API Anthropic dans .env
+# Ajouter ta cle API Gemini dans .env
 npm start
 ```
 
@@ -27,12 +27,12 @@ L'app tourne sur `http://localhost:3000`.
 2. Sur Render : New > Web Service > connecte le repo
 3. Build command : `npm install`
 4. Start command : `npm start`
-5. Ajoute la variable d'environnement `ANTHROPIC_API_KEY` dans les settings Render
+5. Ajoute la variable d'environnement `GEMINI_API_KEY` dans les settings Render
 6. (Optionnel) Ajoute un disque persistant Render sur `/opt/render/project/src/uploads` et `/opt/render/project/src/db` pour garder les photos et la base de donnees entre les redeploiements — sinon elles seront reinitialisees a chaque deploiement (le plan gratuit n'a pas de disque persistant).
 
-## Cle API Anthropic
+## Cle API Gemini
 
-Cree une cle sur [console.anthropic.com](https://console.anthropic.com), section API Keys, et colle-la dans la variable d'environnement `ANTHROPIC_API_KEY`.
+Cree une cle gratuite sur [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) et colle-la dans la variable d'environnement `GEMINI_API_KEY`. Le tier gratuit a des limites de requetes par minute/jour mais suffit largement pour un usage perso.
 
 ## Structure
 
