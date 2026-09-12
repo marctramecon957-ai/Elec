@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ElectroScan — Analyse electrique industrielle</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-name">ElectroScan</span>
+    </div>
+    <nav class="topnav">
+      <button class="nav-link active" data-view="capture">Nouvelle analyse</button>
+      <button class="nav-link" data-view="historique">Historique</button>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Vue capture -->
+  <section id="view-capture" class="view active">
+    <h1>Analyser une installation</h1>
+    <p class="subtitle">Prenez une photo ou importez une image de l'armoire, du cablage ou du rail a analyser.</p>
+
+    <div class="capture-zone" id="capture-zone">
+      <input type="file" id="file-input" accept="image/*" capture="environment" hidden>
+      <div id="capture-placeholder" class="capture-placeholder">
+        <div class="capture-icon">📷</div>
+        <p><strong>Prendre une photo</strong></p>
+        <p class="muted">ou glissez une image ici</p>
+        <button class="btn-primary" id="btn-choose-photo">Choisir une photo</button>
+      </div>
+      <img id="preview-img" class="preview-img" hidden>
+    </div>
+
+    <div id="analyse-actions" class="analyse-actions" hidden>
+      <button class="btn-primary" id="btn-analyser">Analyser la photo</button>
+      <button class="btn-secondary" id="btn-annuler">Annuler</button>
+    </div>
+
+    <div id="loading" class="loading" hidden>
+      <div class="spinner"></div>
+      <p>Analyse en cours...</p>
+    </div>
+
+    <div id="resultat" class="resultat" hidden>
+      <h2>Resultat de l'analyse</h2>
+
+      <div class="cards-grid">
+        <div class="card">
+          <h3>Materiaux identifies</h3>
+          <ul id="liste-materiaux" class="liste-simple"></ul>
+        </div>
+        <div class="card">
+          <h3>Cables</h3>
+          <div id="liste-cables"></div>
+        </div>
+        <div class="card">
+          <h3>Rails</h3>
+          <div id="liste-rails"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <h3>Reperage des fils</h3>
+          <button class="btn-secondary btn-sm" id="btn-ajouter-ligne">+ Ajouter une ligne</button>
+        </div>
+        <div class="table-wrap">
+          <table id="table-reperages">
+            <thead>
+              <tr>
+                <th>Repere</th>
+                <th>Fil amont</th>
+                <th>Fil aval</th>
+                <th>Etat</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbody-reperages"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="notes-card" hidden>
+        <h3>Notes</h3>
+        <p id="notes-text" class="muted"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vue historique -->
+  <section id="view-historique" class="view">
+    <h1>Historique des analyses</h1>
+    <div id="liste-historique" class="historique-liste"></div>
+  </section>
+
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
